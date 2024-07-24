@@ -20,6 +20,7 @@ class MyTextField extends StatefulWidget {
 
 class _MyTextFieldState extends State<MyTextField> {
   bool _obscureText = true;
+
   void initState() {
     super.initState();
     _obscureText = widget.obscureText;
@@ -40,15 +41,24 @@ class _MyTextFieldState extends State<MyTextField> {
           decoration: InputDecoration(
             contentPadding: EdgeInsets.all(15),
             enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.primary,
+                ),
+              borderRadius: BorderRadius.circular(8),
             ),
             focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Theme.of(context).colorScheme.tertiary),
-          ),
-            fillColor: Theme.of(context).colorScheme.background,
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.inversePrimary,
+                width: 2.0,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            fillColor: Theme.of(context).colorScheme.tertiary,
             filled: true,
-            hintText: widget.hintText,
-            hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
+            //hintText: widget.hintText,
+            hintText: widget.hintText, 
+            hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary), // Use the same text for label
+            //floatingLabelBehavior: FloatingLabelBehavior.auto, // Label floats when focused
             suffixIcon: widget.obscureText
               ? IconButton(
                   icon: Icon(
@@ -59,7 +69,6 @@ class _MyTextFieldState extends State<MyTextField> {
                 )
               : null,
         ),
-        style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
       ),
     );
   }

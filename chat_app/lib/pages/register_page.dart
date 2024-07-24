@@ -6,11 +6,14 @@ import 'package:chat_app/components/my_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chat_app/components/square_tile.dart';
+
 
 
 class RegisterPage extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _pwdController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _confirmPwdController = TextEditingController();
 
   final void Function()? onTap;
@@ -23,7 +26,9 @@ class RegisterPage extends StatelessWidget {
     try {
       _auth.signUpWithEmailPassword(
         _emailController.text, 
-        _pwdController.text);
+        _pwdController.text,
+        _nameController.text,
+      );
     } catch (e) {
        showDialog(
         context: context, 
@@ -45,48 +50,33 @@ class RegisterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Background image
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('images/butterfly_background.jpg'),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          // Frosted glass effect
-          BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-            child: Container(
-              color: Colors.black.withOpacity(0.2), // Adjust opacity as needed
-            ),
-          ),
-          Center(
+      backgroundColor: Theme.of(context).colorScheme.tertiary,
+      body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              //icon
-              ImageIcon(
-                  AssetImage(
-                    'images/chrome_butterfly_background.png',
-                    ),
-                    size: 55,
-                    color: Colors.white,
-              ),
-              const SizedBox(height: 50),
+              //logo
+              SizedBox(
+                  height: 80,
+                  width: 80,
+                  child: Image.asset('images/chrome_butterfly_background.png'),
+                ),
+              const SizedBox(height: 25),
               //Text
               Text(
                 "Let's create an account for you",
                 style: GoogleFonts.dmSerifDisplay(
                   textStyle: TextStyle(
-                    color: Colors.white,
                     fontSize: 20)),
               ),
               const SizedBox(height: 25),
+              //name textfield
+              MyTextField(
+                hintText: 'Your Name',
+                obscureText: false,
+                controller: _nameController,
+              ),
+              const SizedBox(height: 10),
               //email textfield
               MyTextField(
                 hintText: 'Email',
@@ -109,6 +99,7 @@ class RegisterPage extends StatelessWidget {
               MyButton(
                 text: "Register",
                 onTap: () => register(context),
+                color: Theme.of(context).colorScheme.inversePrimary,
               ),
               const SizedBox(height: 25),
               Row(
@@ -116,7 +107,7 @@ class RegisterPage extends StatelessWidget {
                 children: [
                 Text("already have an account?", 
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.tertiary
+                    color: Theme.of(context).colorScheme.background
                     )
                 ),
                 GestureDetector(
@@ -125,16 +116,51 @@ class RegisterPage extends StatelessWidget {
                     " Login Now",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.tertiary,
+                      color: Theme.of(context).colorScheme.inversePrimary,
                     ),
                   ),
                 ),
-              ],)
+              ],
+            ),
+            const SizedBox(height: 25),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Row(
+                    children: const [
+                      Expanded(
+                        child: Divider(
+                          thickness: 0.5,
+                          color: Colors.grey,
+                        )
+                      ),
+                      Text("or log in with"),
+                      Expanded(
+                        child: Divider(
+                          thickness: 0.5,
+                          color: Colors.grey,
+                        )
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 25),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SquareTile(
+                      imagePath: 'images/Logo-google-icon-PNG-removebg-preview.png', 
+                      onTap: () => Authservice().signInWithGoogle(),
+                    ),
+                    SizedBox(width: 10),
+                    SquareTile(
+                      imagePath: 'images/png-transparent-apple-logo-apple-logo-removebg-preview.png', 
+                      onTap: () => {},
+                    ),
+                  ],
+                )
             ],
           ),
         ),
-        ]
-      ),
-    );
+      );
   }
 }

@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_constructors_in_immutables, use_build_context_synchronously, unnecessary_import
 
 import 'dart:ui';
+import 'package:chat_app/components/square_tile.dart';
 import 'package:chat_app/services/auth/auth_service.dart';
 import 'package:chat_app/components/my_button.dart';
 import 'package:chat_app/components/my_text_field.dart';
@@ -22,12 +23,17 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _pwdController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
 
   void login(BuildContext context) async {
     final authservice = Authservice();
 
     try {
-      await authservice.signInWithEmailPassword(_emailController.text, _pwdController.text);
+      await authservice.signInWithEmailPassword(
+        _emailController.text,
+        _pwdController.text, 
+        _nameController.text
+      );
     } catch (e) {
       showDialog(
         context: context,
@@ -41,30 +47,12 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Background image
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('images/butterfly_background.jpg'),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          // Frosted glass effect
-          BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-            child: Container(
-              color: Colors.black.withOpacity(0.2), // Adjust opacity as needed
-            ),
-          ),
-          // Page content
-          Center(
+      backgroundColor: Theme.of(context).colorScheme.tertiary,
+      body:Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                //logo
                 SizedBox(
                   height: 80,
                   width: 80,
@@ -73,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 25),
                 Text(
                   "Welcome to Valentine!!",
-                  style: GoogleFonts.dmSerifDisplay(textStyle: TextStyle(color: Colors.white, fontSize: 20)),
+                  style: GoogleFonts.dmSerifDisplay(textStyle: TextStyle(fontSize: 20)),
                 ),
                 const SizedBox(height: 25),
                 MyTextField(
@@ -91,29 +79,64 @@ class _LoginPageState extends State<LoginPage> {
                 MyButton(
                   text: "Login",
                   onTap: () => login(context),
+                  color: Theme.of(context).colorScheme.inversePrimary,
                 ),
                 const SizedBox(height: 25),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Not a member?", style: TextStyle(color: Colors.white)),
+                    Text("Not a member?", style: TextStyle(color: Theme.of(context).colorScheme.background)),
                     GestureDetector(
                       onTap: widget.onTap,
                       child: Text(
                         " Register Now",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.inversePrimary,
                         ),
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(height: 25),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Row(
+                    children: const [
+                      Expanded(
+                        child: Divider(
+                          thickness: 0.5,
+                          color: Colors.grey,
+                        )
+                      ),
+                      Text("or log in with"),
+                      Expanded(
+                        child: Divider(
+                          thickness: 0.5,
+                          color: Colors.grey,
+                        )
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 25),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SquareTile(
+                      imagePath: 'images/Logo-google-icon-PNG-removebg-preview.png', 
+                      onTap: () => Authservice().signInWithGoogle(),
+                    ),
+                    SizedBox(width: 10),
+                    SquareTile(
+                      imagePath: 'images/png-transparent-apple-logo-apple-logo-removebg-preview.png', 
+                      onTap: () => {},
+                    ),
+                  ],
+                )
               ],
             ),
           ),
-        ],
-      ),
-    );
+      );
   }
 }

@@ -1,6 +1,8 @@
-// ignore_for_file: prefer_const_constructors, no_leading_underscores_for_local_identifiers, unused_import, non_constant_identifier_names, unused_field
+
+// ignore_for_file: non_constant_identifier_names, prefer_const_constructors
 
 import 'package:chat_app/components/user_tile.dart';
+import 'package:chat_app/components/custom_Search.dart';
 import 'package:chat_app/pages/chat_page.dart';
 import 'package:chat_app/services/auth/auth_service.dart';
 import 'package:chat_app/components/my_drawer.dart';
@@ -16,20 +18,37 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      appBar: AppBar(
-        title: const Text("Home"),
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.grey,
-        elevation: 0,
+      backgroundColor: Theme.of(context).colorScheme.tertiary,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(80),
+        child: AppBar(
+          title: const Text("Messages"),
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.blue[700],
+          elevation: 0,
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: IconButton( 
+                icon: Icon(Icons.search),
+                onPressed: (){
+                  showSearch(context: context, delegate: CustomSearch());
+                },
+              ),
+            )
+          ],
+        ),
       ),
       drawer: MyDrawer(),
-      body: _buildUserList(),
-    );
+      
+      body: Expanded(
+              child: _buildUserList()
+          ),
+      );
   }
-  Widget _buildUserList(){
+ Widget _buildUserList(){
     return StreamBuilder(
-      stream: _chatService.getUsersStream(), 
+      stream: _chatService.getChatRoomsStream(), 
       builder: (context, snapshot){
         if (snapshot.hasError){
           return const Text("Error");
@@ -38,30 +57,33 @@ class HomePage extends StatelessWidget {
           return const Text("Loading.....");
         }
         return ListView(
-          children: snapshot.data!.map<Widget>((userData) => _buildUserListItem(
-            userData, context
+          children: snapshot.data!.map<Widget>((chatRoomData) => _buildUserListItem(
+            chatRoomData, context
           )).toList(),
         );
       });
   }
-  Widget _buildUserListItem(
-    Map<String, dynamic> userData, BuildContext context){
-      if(userData["email"] != _AuthService.getCurrentUser()!.email){
-        return UserTile(
-        text: userData["email"], 
-        onTap: (){
-         Navigator.push(
-          context, 
-          MaterialPageRoute(builder: (context) => ChatPage(
-            receiverEmail: userData["email"],
-            receiverID: userData["uid"],
-          )
-           )
-         );
+  Widget _buildUserListItem(Map<String, dynamic> chatRoomData, BuildContext context) {
+    String currentUserID = _AuthService.getCurrentUser()!.uid;
+    bool isCurrentUserInvolved = chatRoomData["senderID"] == currentUserID || chatRoomData["receiverID"] == currentUserID;
+
+    if (isCurrentUserInvolved) {
+      return UserTile(
+        text: chatRoomData["receiverName"],
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatPage(
+                receiverID: chatRoomData["receiverID"],
+                receiverName: chatRoomData["receiverName"],
+              ),
+            ),
+          );
         },
       );
-      } else {
-        return Container();
-      }
+    } else {
+      return Container();
     }
+  }
 }
